@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/travel.iml" filepath="$PROJECT_DIR$/travel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/travel_common/travel_common.iml" filepath="$PROJECT_DIR$/travel_common/travel_common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/travel_flink/travel_flink.iml" filepath="$PROJECT_DIR$/travel_flink/travel_flink.iml" />
+      <module fileurl="file://$PROJECT_DIR$/travel_spark/travel_spark.iml" filepath="$PROJECT_DIR$/travel_spark/travel_spark.iml" />
+      <module fileurl="file://$PROJECT_DIR$/travel_web/travel_web.iml" filepath="$PROJECT_DIR$/travel_web/travel_web.iml" />
+    </modules>
+  </component>
+</project>

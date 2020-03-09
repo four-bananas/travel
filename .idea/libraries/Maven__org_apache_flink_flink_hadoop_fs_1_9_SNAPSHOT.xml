@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.apache.flink:flink-hadoop-fs:1.9-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/repository/maven/org/apache/flink/flink-hadoop-fs/1.9-SNAPSHOT/flink-hadoop-fs-1.9-20200307.035208-350.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/repository/maven/org/apache/flink/flink-hadoop-fs/1.9-SNAPSHOT/flink-hadoop-fs-1.9-20200307.035208-350-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/repository/maven/org/apache/flink/flink-hadoop-fs/1.9-SNAPSHOT/flink-hadoop-fs-1.9-20200307.035208-350-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
