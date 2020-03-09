@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-package com.sev7e0.travel;
+package com.travel;
 
-import com.sev7e0.travel.functions.TypeProcessFunction;
-import com.sev7e0.travel.sink.GpsRedisMapper;
-import com.sev7e0.travel.sink.HBaseGpsSink;
-import com.sev7e0.travel.sink.HBaseOrderSink;
-import com.sev7e0.travel.utils.FlinkKafkaUtils;
+import com.travel.functions.TypeProcessFunction;
+import com.travel.sink.GpsRedisMapper;
+import com.travel.sink.HBaseGpsSink;
+import com.travel.sink.HBaseOrderSink;
+import com.travel.utils.FlinkKafkaUtils;
 import com.travel.common.ConfigUtil;
 import com.travel.common.Constants;
 import org.apache.flink.api.java.tuple.Tuple2;

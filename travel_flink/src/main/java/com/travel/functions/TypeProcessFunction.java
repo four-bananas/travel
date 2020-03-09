@@ -1,4 +1,4 @@
-package com.sev7e0.travel.functions;
+package com.travel.functions;
 
 import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.util.Collector;

@@ -1,4 +1,4 @@
-package com.sev7e0.travel.sink;
+package com.travel.sink;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.connectors.redis.common.mapper.RedisCommand;

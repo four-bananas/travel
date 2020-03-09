@@ -1,4 +1,4 @@
-package com.sev7e0.travel.sink;
+package com.travel.sink;
 
 import com.travel.common.Constants;
 import com.travel.common.HBaseUtil;

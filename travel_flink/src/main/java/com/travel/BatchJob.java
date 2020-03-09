@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.sev7e0.travel;
+package com.travel;
 
 import org.apache.flink.api.java.ExecutionEnvironment;
 

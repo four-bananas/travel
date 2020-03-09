@@ -1,4 +1,4 @@
-package com.sev7e0.travel.utils;
+package com.travel.utils;
 
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.utils.ParameterTool;
