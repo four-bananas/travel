@@ -172,14 +172,6 @@ object HbaseTools extends Logging with Serializable {
     return Base64.encodeBytes(proto.toByteArray)
   }
 
-
-
-
-
-
-
-
-
 //  val configuration = HBaseConfiguration.create()
 //  configuration.set("hbase.zookeeper.quorum",Constants.ZK_IP)
 //  val connection = ConnectionFactory.createConnection(configuration)
@@ -283,11 +275,20 @@ object HbaseTools extends Logging with Serializable {
 
   }
 
-
+  /**
+   *
+   *
+   * @param streamingContext
+   * @param kafkaParams
+   * @param topics
+   * @param group
+   * @param matchPattern
+   * @return
+   */
   def getStreamingContextFromHBase(streamingContext: StreamingContext, kafkaParams: Map[String, Object], topics: Array[String], group: String,matchPattern:String): InputDStream[ConsumerRecord[String, String]] = {
     val connection: Connection = getHbaseConn
     val admin: Admin = connection.getAdmin
-    var getOffset:collection.Map[TopicPartition, Long]  = HbaseTools.getOffsetFromHBase(connection,admin,topics,group)
+    val getOffset: collection.Map[TopicPartition, Long] = HbaseTools.getOffsetFromHBase(connection, admin, topics, group)
     val result = if(getOffset.nonEmpty){
       val consumerStrategy: ConsumerStrategy[String, String] =  ConsumerStrategies.SubscribePattern[String,String](Pattern.compile(matchPattern),kafkaParams,getOffset)
       val value: InputDStream[ConsumerRecord[String, String]] = KafkaUtils.createDirectStream(streamingContext,LocationStrategies.PreferConsistent,consumerStrategy)
@@ -303,6 +304,14 @@ object HbaseTools extends Logging with Serializable {
   }
 
 
+  /**
+   * 手动管理 kafka offset
+   * @param connection
+   * @param admin
+   * @param topics
+   * @param group
+   * @return
+   */
   def getOffsetFromHBase(connection: Connection,admin: Admin,topics: Array[String], group: String): collection.Map[TopicPartition, Long] = {
     if(!admin.tableExists(TableName.valueOf(Constants.HBASE_OFFSET_STORE_TABLE))){
       val chengdu_gps_offset = new HTableDescriptor(TableName.valueOf(Constants.HBASE_OFFSET_STORE_TABLE))
@@ -413,7 +422,7 @@ object HbaseTools extends Logging with Serializable {
       tuples
     })
     //创建HBase表
-    HBaseUtil.createTable(HBaseUtil.getConnection, tableName, Constants.DEFAULT_FAMILY)
+    HBaseUtil.checkOrCreateTable(HBaseUtil.getConnection, tableName, Constants.DEFAULT_FAMILY)
     finalSavePaiRdd.saveAsNewAPIHadoopDataset(job.getConfiguration)
   }
 
@@ -429,7 +438,6 @@ object HbaseTools extends Logging with Serializable {
       //      config.set("hbase.client.ipc.pool.size","200");
       val connection = ConnectionFactory.createConnection(config)
       connection
-
     }catch{
       case exception: Exception =>
         error(exception.getMessage)
@@ -451,13 +459,20 @@ object HbaseTools extends Logging with Serializable {
   }
 
 
+  /**
+   *
+   * @param group
+   * @param topic
+   * @param partition
+   * @param offset
+   */
   def saveBatchOffset(group: String, topic: String, partition: String, offset: Long): Unit = {
     val conn: Connection = HbaseTools.getHbaseConn
     val table: Table = conn.getTable(TableName.valueOf(Constants.HBASE_OFFSET_STORE_TABLE))
     val rowkey = group + ":" + topic
-    val columName = group + ":" + topic + ":" + partition
+    val columnName = group + ":" + topic + ":" + partition
     val put = new Put(rowkey.getBytes())
-    put.addColumn(Constants.HBASE_OFFSET_FAMILY_NAME.getBytes(),columName.getBytes(),offset.toString.getBytes())
+    put.addColumn(Constants.HBASE_OFFSET_FAMILY_NAME.getBytes(),columnName.getBytes(),offset.toString.getBytes())
     table.put(put)
 
     table.close()

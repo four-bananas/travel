@@ -1,4 +1,4 @@
-package com.travel.programApp.hbaseSink
+package com.travel.streaming.hbaseSink
 
 import java.util.Optional
 

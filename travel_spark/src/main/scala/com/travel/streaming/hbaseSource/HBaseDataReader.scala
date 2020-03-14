@@ -1,4 +1,4 @@
-package com.travel.programApp.hbaseSource
+package com.travel.streaming.hbaseSource
 
 import com.travel.utils.HbaseTools
 import org.apache.hadoop.hbase.TableName

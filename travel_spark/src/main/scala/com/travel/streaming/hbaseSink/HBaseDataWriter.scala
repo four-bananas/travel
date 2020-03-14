@@ -1,4 +1,4 @@
-package com.travel.programApp.hbaseSink
+package com.travel.streaming.hbaseSink
 
 import com.travel.utils.HbaseTools
 import org.apache.hadoop.hbase.client.Connection

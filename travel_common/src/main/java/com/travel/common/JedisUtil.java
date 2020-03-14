@@ -68,7 +68,7 @@ public class JedisUtil {
 		String password = ConfigUtil.getStringConfig(Constants.JEDIS_PASS);
 		int db = ConfigUtil.getIntegerConfig(Constants.JEDIS_DB, "0");
 		int connectTimeOut = ConfigUtil.getIntegerConfig(Constants.JEDIS_TIMEOUT,"3000");
-		jedisPool = new JedisPool(config, jedisHost, jedisPort, connectTimeOut, password, db);
+		jedisPool = new JedisPool(config, jedisHost, jedisPort, connectTimeOut);
 		log.info("init jedisPool by config:" + jedisHost + "---" + jedisPort + "---" + password + "---" + db + "---" + connectTimeOut);
 	}
 
