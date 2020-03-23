@@ -24,7 +24,7 @@ public class HBaseGpsSink extends RichSinkFunction<String> {
 		connection = HBaseUtil.getConnection();
 		admin = connection.getAdmin();
 		if(!admin.tableExists(TableName.valueOf(Constants.HTAB_GPS))){
-			HBaseUtil.createTable(connection,Constants.HTAB_GPS,Constants.DEFAULT_FAMILY);
+			HBaseUtil.checkOrCreateTable(connection,Constants.HTAB_GPS,Constants.DEFAULT_FAMILY);
 		}
 	}
 

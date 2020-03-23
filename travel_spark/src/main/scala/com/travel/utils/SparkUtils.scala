@@ -67,6 +67,11 @@ object SparkUtils {
   }
 
 
+  /**
+   * 创建
+   * @param sparkSession
+   * @return
+   */
   def broadCastDistrictValue(sparkSession: SparkSession): Broadcast[util.ArrayList[District]] = {
     //获取每个区域的边界，每个区域画一个圈，判断经纬度是否在这个圈内
     val districtList = new java.util.ArrayList[District]();

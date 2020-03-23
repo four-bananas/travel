@@ -1,5 +1,6 @@
 package com.travel.streaming.hbaseSink
 
+import com.travel.common.HBaseUtil
 import com.travel.utils.HbaseTools
 import org.apache.hadoop.hbase.client.Connection
 import org.apache.spark.sql.Row
@@ -7,7 +8,7 @@ import org.apache.spark.sql.sources.v2.writer.{DataWriter, WriterCommitMessage}
 
 class HBaseDataWriter(tableName:String,rowkey:String,hbaseFields:String) extends DataWriter[Row]{
 
-  private val conn: Connection = HbaseTools.getHbaseConn
+  private val conn: Connection = HBaseUtil.getConnection
 
 
 
