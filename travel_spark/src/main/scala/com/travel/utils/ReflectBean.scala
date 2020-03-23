@@ -3,16 +3,14 @@ package com.travel.utils
 import com.travel.loggings.Logging
 
 
-/**
-  * Created by laowang
-  */
+
 object ReflectBean extends Logging{
 
   def reflect(data: Any , tableName:String):Map[String , String] ={
 
     tableName match{
         //订单表
-      case tableName if(GlobalConfigUtils.getProp("syn.table.order_info").equals(tableName) || GlobalConfigUtils.getProp("syn.table.order_info") == tableName) =>
+      case tableName if GlobalConfigUtils.getProp("syn.table.order_info").equals(tableName) || GlobalConfigUtils.getProp("syn.table.order_info") == tableName =>
         val clazz = Class.forName("com.travel.bean.OrderInfo")
         val fields = clazz.getDeclaredFields
         var map = Map[String , String]()

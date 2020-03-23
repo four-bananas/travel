@@ -1,5 +1,6 @@
 package com.travel.common;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
@@ -29,12 +30,6 @@ public class HBaseUtil {
     private static void initConnection() throws IOException {
         if (connection == null || connection.isClosed()) {
             Configuration conf = HBaseConfiguration.create();
-//            conf.set("hbase.zookeeper.quorum", "192.168.21.177,192.168.21.178,192.168.21.179");
-//            conf.set("hbase.zookeeper.quorum", "10.20.3.177,10.20.3.178,10.20.3.179");
-//            conf.set("hbase.zookeeper.quorum", "117.51.141.24,117.51.142.225");
-           // System.out.println(ConfigUtil.getConfig("hbase_connect"));
-            conf.set("hbase.zookeeper.quorum", "spark01,spark02,spark03");
-            conf.set("hbase.zookeeper.property.clientPort", "2181");
             connection = ConnectionFactory.createConnection(conf);
         }
     }
@@ -84,7 +79,6 @@ public class HBaseUtil {
             });
         }
         admin.close();
-        connection.close();
     }
 
     /**
@@ -103,6 +97,46 @@ public class HBaseUtil {
             return true;
         }
         return false;
+    }
+
+
+    /**
+     * 执行hbase预分区策略
+     * @param connection hbase连接
+     * @param tableName 要创建那些表名
+     * @param regionNum 分区数
+     * @param dropExistTable 当表名存在时，是否删除原表
+     * @throws IOException IOException
+     */
+    public static void doPreRegion(Connection connection, HashMap<String,String> tableName, Integer regionNum,
+                                   Boolean dropExistTable) throws IOException {
+        Admin admin = connection.getAdmin();
+        for (Map.Entry<String,String> entry : tableName.entrySet()){
+            TableName name = TableName.valueOf(entry.getKey());
+            HTableDescriptor hTableDescriptor = new HTableDescriptor(name);
+            HColumnDescriptor hColumnDescriptor = new HColumnDescriptor(entry.getValue());
+            hTableDescriptor.addFamily(hColumnDescriptor);
+            byte[][] bytes = new byte[regionNum-1][];
+            for (int i = 0; i < regionNum-1; i++) {
+                String leftPad = StringUtils.leftPad(i + "", 4, "0");
+                bytes[i] = Bytes.toBytes(leftPad+"|");
+            }
+            if (admin.tableExists(name)){
+                if (dropExistTable){
+                    logger.info("table {} exist, will drop it.", name);
+                    admin.disableTable(name);
+                    admin.deleteTable(name);
+                }else {
+                    logger.warn("table {} exist.", entry.getKey());
+                    continue;
+                }
+
+            }
+            admin.createTable(hTableDescriptor, bytes);
+            logger.info("create hbase table {} completed!, with columnFamily {} and {} regions.", name,
+                entry.getValue(), regionNum);
+        }
+        admin.close();
     }
 
     public static Table getTable(String tableName)throws Exception{
@@ -242,15 +276,5 @@ public class HBaseUtil {
         }
         return restList;
     }
-
-
-    public static void main(String[] args) throws IOException {
-        Connection connection = getConnection();
-        Admin admin1 = connection.getAdmin();
-
-        initConnection();
-        Admin admin = HBaseUtil.connection.getAdmin();
-    }
-
 
 }

@@ -1,5 +1,6 @@
 package com.travel.streaming.hbaseSource
 
+import com.travel.common.HBaseUtil
 import com.travel.utils.HbaseTools
 import org.apache.hadoop.hbase.TableName
 import org.apache.hadoop.hbase.client._
@@ -14,7 +15,7 @@ class HBaseDataReader(tableName:String,cfcc:String) extends DataReader[Row] /*wi
   var resultScanner:ResultScanner = null
 
   def getIterator:Iterator[Result] = {
-    hbaseConnection = HbaseTools.getHbaseConn
+    hbaseConnection = HBaseUtil.getConnection
     val table: Table = hbaseConnection.getTable(TableName.valueOf(tableName.trim))
     val scan = new Scan()
     val cfccArr: Array[String] = cfcc.split(",")
