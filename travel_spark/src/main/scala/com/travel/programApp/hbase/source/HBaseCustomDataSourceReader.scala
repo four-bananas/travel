@@ -8,7 +8,11 @@ import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types.StructType
 
 import scala.collection.mutable.ListBuffer
-
+/**
+ * 注意：{@link SupportsPushDownFilters }
+ * 1. 下推条件必须满足数据类型 比如：string 不能判断大小
+ * 2. short and bytes 比较大小必须使用显示转换 where id case (见spark ParquetFilter源码)
+ */
 class HBaseCustomDataSourceReader
   (hbaseTableName: String, sparkSqlTableSchema: String, hbaseTableSchema: String)
     extends DataSourceReader with SupportsPushDownFilters with SupportsPushDownRequiredColumns{
