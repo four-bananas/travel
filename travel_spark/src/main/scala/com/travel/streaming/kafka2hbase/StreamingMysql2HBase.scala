@@ -8,54 +8,53 @@ import com.travel.utils.{HbaseTools, JsonParse, SparkKafkaTools}
 import org.apache.hadoop.hbase.client.Connection
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.streaming.kafka010.{CanCommitOffsets, HasOffsetRanges, OffsetRange}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 /**
- * 同步mysql to hbase
+ * 使用canal同步mysql to hbase
  */
 object StreamingMysql2HBase extends Logging {
 
-  def main(args: Array[String]): Unit = {
+	def main(args: Array[String]): Unit = {
 
-    val topics = Array("travel")
-    val conf = new SparkConf()
-    conf.setAppName(StreamingMysql2HBase.getClass.getName).setMaster("local[1]")
-    val sparkSession = SparkSession.builder().config(conf).getOrCreate()
+		val topics = Array("travel")
+		val conf = new SparkConf()
+		conf.setAppName(StreamingMysql2HBase.getClass.getName).setMaster("local[1]")
 
-    val sparkContext = sparkSession.sparkContext
+		val sparkSession = SparkSession.builder().config(conf).getOrCreate()
 
-    val streamingContext = new StreamingContext(sparkContext, Seconds(2))
+		val sparkContext = sparkSession.sparkContext
 
-    val group: String = "travel"
+		val streamingContext = new StreamingContext(sparkContext, Seconds(2))
 
-    val connection: Connection = HBaseUtil.getConnection
+		val group: String = "travel"
 
-    //从Hbase获取offset
-    val kafkaOffset = HbaseTools.getOffsetFromHBase(connection, topics, group)
+		val connection: Connection = HBaseUtil.getConnection
 
-    val kafkaParams = SparkKafkaTools.buildKafkaProperties()
+		//从Hbase获取offset
+		val kafkaOffset = HbaseTools.getOffsetFromHBase(connection, topics, group)
 
-    import collection.JavaConverters._
-    //构建kafka source 生成kafka DStream
-    val kafkaDS = SparkKafkaTools.buildSourceFromKafka(streamingContext, Pattern.compile("travel"), kafkaParams, kafkaOffset.asJava)
+		val kafkaParams = SparkKafkaTools.buildKafkaProperties()
 
-    kafkaDS.foreachRDD(rdd => {
-      rdd.foreachPartition(partition => {
-        val conn = HBaseUtil.getConnection
-        partition.foreach(record => {
-          val line = record.value()
-          println(line)
-          val tuple = JsonParse.parse(line)
-          HbaseTools.saveBusinessDatas(tuple, conn)
-        })
-        conn.close()
-      })
-      //手动管理offset 保存到hbase
-      SparkKafkaTools.saveOffsetToHBase(rdd, kafkaDS,group)
-    })
-    streamingContext.start()
-    streamingContext.awaitTermination()
-  }
+		import collection.JavaConverters._
+		//构建kafka source 生成kafka DStream
+		val kafkaDS = SparkKafkaTools.buildSourceFromKafka(streamingContext, Pattern.compile("travel"), kafkaParams, kafkaOffset.asJava)
+
+		kafkaDS.foreachRDD(rdd => {
+			rdd.foreachPartition(partition => {
+				val conn = HBaseUtil.getConnection
+				partition.foreach(record => {
+					val line = record.value()
+					val tuple = JsonParse.parse(line)
+					HbaseTools.saveBusinessDatas(tuple, conn)
+				})
+				conn.close()
+			})
+			//手动管理offset 保存到hbase
+			SparkKafkaTools.saveOffsetToHBase(rdd, kafkaDS, group)
+		})
+		streamingContext.start()
+		streamingContext.awaitTermination()
+	}
 }
 

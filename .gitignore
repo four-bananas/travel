@@ -32,3 +32,9 @@ target/
 #system ignore
 .DS_Store
 Thumbs.db
+
+/travel_spark/src/main/resources/core-site.xml
+/travel_spark/src/main/resources/hbase-site.xml
+/travel_spark/src/main/resources/hdfs-site.xml
+/travel_spark/src/main/resources/hive-site.xml
+/travel_spark/src/main/resources/jedisConfig.properties
