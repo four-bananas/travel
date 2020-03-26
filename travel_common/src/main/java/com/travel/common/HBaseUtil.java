@@ -7,6 +7,8 @@ import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -14,6 +16,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class HBaseUtil {
+
+    protected static final Logger logger = LoggerFactory.getLogger(HBaseUtil.class);
+
     private static Connection connection = null;
 
     /**
@@ -49,38 +54,37 @@ public class HBaseUtil {
     }
 
     /**
-     * 创建表
+     *
      *
      * @param tableNameString
      * @param columnFamily
      * @throws IOException
      */
-    public static void createTable(Connection connection, String tableNameString, String columnFamily) throws IOException {
+    public static void checkOrCreateTable(Connection connection, String tableNameString, String columnFamily) throws IOException {
         Admin admin = connection.getAdmin();
-        TableName tableName = TableName.valueOf(tableNameString); //d2h (data to HBase)
+        TableName tableName = TableName.valueOf(tableNameString);
         HTableDescriptor table = new HTableDescriptor(tableName);
         HColumnDescriptor family = new HColumnDescriptor(columnFamily);
         table.addFamily(family);
         //判断表是否已经存在
-
         if (!admin.tableExists(tableName)) {
             admin.createTable(table);
         }else{
             //如果表已经存在了，判断列族是否存在
-            Table table1 = connection.getTable(TableName.valueOf(tableNameString));
-            HTableDescriptor tableDescriptor = table1.getTableDescriptor();
+            HTableDescriptor tableDescriptor = admin.getTableDescriptor(tableName);
             HColumnDescriptor[] columnFamilies = tableDescriptor.getColumnFamilies();
-            for (HColumnDescriptor hColumnDescriptor : columnFamilies) {
-                String nameAsString = hColumnDescriptor.getNameAsString();
-                if(!columnFamily.equals(nameAsString)){
-                    HColumnDescriptor myColumnFamily = new HColumnDescriptor(columnFamily);
-                    admin.modifyColumn(TableName.valueOf(tableNameString),myColumnFamily);
+            Arrays.asList(columnFamilies).forEach(des->{
+                if(!columnFamily.equals(des.getNameAsString())){
+                    try {
+                        admin.modifyColumn(tableName, family);
+                    } catch (IOException e) {
+                        logger.error("modify hbase column error", e);
+                    }
                 }
-            }
+            });
         }
         admin.close();
         connection.close();
-
     }
 
     /**
@@ -110,7 +114,7 @@ public class HBaseUtil {
 
     public static void savePuts(List<Put> putList,String tableName) throws Exception {
         if (!tableExists(tableName)) {
-            HBaseUtil.createTable(getConnection(), tableName, Constants.DEFAULT_FAMILY);
+            HBaseUtil.checkOrCreateTable(getConnection(), tableName, Constants.DEFAULT_FAMILY);
         }
         Table table = HBaseUtil.getTable(tableName);
         table.put(putList);

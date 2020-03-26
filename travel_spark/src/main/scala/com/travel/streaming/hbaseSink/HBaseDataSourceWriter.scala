@@ -1,4 +1,4 @@
-package com.travel.programApp.hbaseSink
+package com.travel.streaming.hbaseSink
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.sources.v2.writer.{DataSourceWriter, DataWriterFactory, WriterCommitMessage}

@@ -1,4 +1,4 @@
-package com.travel.programApp.hbaseSource
+package com.travel.streaming.hbaseSource
 
 import org.apache.spark.sql.sources.v2.reader.DataSourceReader
 import org.apache.spark.sql.sources.v2.{DataSourceOptions, DataSourceV2, ReadSupport}
